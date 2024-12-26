@@ -1,6 +1,11 @@
+import os
 from fastapi import FastAPI, Query
 from typing import Optional
 import matplotlib.pyplot as plt
+import logging
+
+#initialize logging
+logging.basicConfig(level=logging.WARNING)
 
 def score_metric(data, thresholds, reverse=False):
     """
@@ -177,14 +182,14 @@ def plot_scores(scores):
     ax.set_title("Normalized AI Company Category Scores", size=16)
     plt.show()
 
-
-# Example usage:
-company_symbol = "TSLA"
-result = score_ai_company(company_symbol)
-print(f"Scores for {company_symbol}: {result}")
-
-# Plot the results
-plot_scores(result["Category Scores"])
+# Plot the results if the script is run directly
+if __name__  == "__main__":
+    # example usage for local testing
+    company_symbol = "TSLA"
+    result = score_ai_company(company_symbol)
+    print(f"Scores for {company symbol}: {result}")
+    # call plot_scores only during local testing
+    plot_scores(result["Category Scores"])
 
 # Create a FastAPI app
 app = FastAPI()
@@ -207,4 +212,11 @@ def handle_score_request(ticker: str = Query(..., description="The stock ticker 
     except Exception as e:
         return {"error": str(e)}
 
+if __name__ == "__main__":
+    import uvicorn
 
+#dynamically fetch
+port = int(os.getenv("PORT", 8000))
+
+#run app w dynamic port
+uvicorn.run(app, host="0.0.0.0", port=port)
