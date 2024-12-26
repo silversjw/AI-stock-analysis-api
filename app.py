@@ -1,3 +1,5 @@
+from fastapi import FastAPI, Query
+from typing import Optional
 import matplotlib.pyplot as plt
 
 def score_metric(data, thresholds, reverse=False):
@@ -183,3 +185,26 @@ print(f"Scores for {company_symbol}: {result}")
 
 # Plot the results
 plot_scores(result["Category Scores"])
+
+# Create a FastAPI app
+app = FastAPI()
+
+@app.get("/score_ai_company")
+def handle_score_request(ticker: str = Query(..., description="The stock ticker of the company to analyze")):
+    """
+    Endpoint to process stock ticker and return AI company scores.
+    """
+    try:
+        # Call the scoring function with the provided ticker
+        result = score_ai_company(ticker)
+        return {
+            "success": True,
+            "ticker": ticker,
+            "category_scores": result["Category Scores"],
+            "overall_score": result["Overall Score"],
+            "detailed_scores": result["Detailed Scores"]
+        }
+    except Exception as e:
+        return {"error": str(e)}
+
+
